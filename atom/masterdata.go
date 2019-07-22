@@ -1,0 +1,39 @@
+package atom
+
+type AtomMasterDataTable struct {
+	Header                   AtomCommonTableHeader
+	UtilityPipeLine          uint16
+	MultimediaCapabilityInfo uint16
+	MultimediaConfigInfo     uint16
+	StandardVESATiming       uint16
+	FirmwareInfo             uint16
+	PaletteData              uint16
+	LCDInfo                  uint16
+	DIGTransmitterInfo       uint16
+	AnalogTVInfo             uint16
+	SupportedDevicesInfo     uint16
+	GPIOI2CInfo              uint16
+	VRAMageByFirmware        uint16
+	GPIOPinLUT               uint16
+	VESAToInternalModeLUT    uint16
+	ComponentVideoInfo       uint16
+	PowerPlayInfo            uint16
+	CompassionateData        uint16
+	SaveRestoreInfo          uint16
+	PPLLSSInfo               uint16
+	OemInfo                  uint16
+	XTMDSInfo                uint16
+	MclkSSInfo               uint16
+	ObjectHeader             uint16
+	IndirectIOAccess         uint16
+	MCInitParameter          uint16
+	ASICVDDCInfo             uint16
+	ASICInternalSSInfo       uint16
+	TVVideoMode              uint16
+	VRAMInfo                 uint16
+	MemoryTrainingInfo       uint16
+	IntegratedSystemInfo     uint16
+	ASICProfilingInfo        uint16
+	VoltageObjectInfo        uint16
+	PowerSourceInfo          uint16
+}

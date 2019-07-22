@@ -8,7 +8,7 @@ import (
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/widgets"
 
-	"github.com/jfoster/atombiostool/atombios"
+	"github.com/jfoster/atombiostool/atom"
 )
 
 const (
@@ -44,8 +44,8 @@ func main() {
 					fmt.Print(err)
 				}
 
-				var checksum byte = dat[atombios.AtomRomChecksumOffset]
-				var size int = int(dat[atombios.AtomRomHeaderSizeOffset]) * 512
+				var checksum byte = dat[atom.AtomRomChecksumOffset]
+				var size int = int(dat[atom.AtomRomHeaderSizeOffset]) * 512
 
 				var check byte
 				for _, v := range dat[0:size] {

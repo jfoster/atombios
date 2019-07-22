@@ -6,7 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/jfoster/atombiostool/atombios"
+	"github.com/iancoleman/orderedmap"
+	"github.com/jfoster/atombiostool/atom"
+	"github.com/jfoster/atombiostool/bios"
+
+	"github.com/go-restruct/restruct"
 	"github.com/ttacon/chalk"
 )
 
@@ -20,42 +24,130 @@ func main() {
 		return
 	}
 
-	fmt.Printf("0x%X\n", data[atombios.AtomRomChecksumOffset])
-	atombios.FixChecksum(data)
-	fmt.Printf("0x%X\n", data[atombios.AtomRomChecksumOffset])
+	expectedchecksum := atom.CalcChecksum(data)
+	currentchecksum := data[atom.AtomRomChecksumOffset]
+	var color = chalk.Green
+	if expectedchecksum != currentchecksum {
+		color = chalk.Red
+	}
+	fmt.Printf("Checksum: %s0x%X%s\n", color, currentchecksum, chalk.Reset)
 
-	offset := binary.LittleEndian.Uint16(data[atombios.AtomRomHeaderPointerOffset:])
-	header := atombios.AtomRomHeader{}
-	atombios.Unpack(data, offset, &header)
-	test(header, offset)
+	b := bios.New()
+
+	var header atom.AtomRomHeader
+	headerOffset := binary.LittleEndian.Uint16(data[atom.AtomRomHeaderPointerOffset:])
+	unpack(data, headerOffset, &header)
+	b.SetO(header, headerOffset)
 
 	if string(header.FirmWareSignature[:]) != "ATOM" {
 		fmt.Println("Not an ATOM file!")
 		return
 	}
 
-	offset = header.MasterCommandTableOffset
-	commandtable := atombios.AtomMasterCommandTable{}
-	atombios.Unpack(data, offset, &commandtable)
-	test(commandtable, offset)
+	var pciInfo atom.AtomRomPCIInfo
+	pciInfoOffset := header.PCIInfoOffset
+	unpack(data, pciInfoOffset, &pciInfo)
+	b.SetO(pciInfo, pciInfoOffset)
 
-	offset = header.MasterDataTableOffset
-	datatable := atombios.AtomMasterDataTable{}
-	atombios.Unpack(data, offset, &datatable)
-	test(datatable, offset)
+	if pciInfo.Signature != "PCIR" {
+		return
+	}
 
-	offset = datatable.PowerPlayInfo
-	powerplaytable := atombios.AtomTongaPowerPlayTable{}
-	atombios.Unpack(data, offset, &powerplaytable)
-	test(powerplaytable, offset)
+	if pciInfo.VendorID != 0x1002 {
+		return
+	}
 
-	offset = datatable.PowerPlayInfo + powerplaytable.PowerTuneTableOffset
-	powertunetable := atombios.AtomFijiPowerTuneTable{}
-	atombios.Unpack(data, offset, &powertunetable)
-	test(powertunetable, offset)
+	fmt.Printf("DeviceID: 0x%X\n", pciInfo.DeviceID)
 
+	var commandTable atom.AtomMasterCommandTable
+	commandTableOffset := header.MasterCommandTableOffset
+	unpack(data, commandTableOffset, &commandTable)
+	b.SetO(commandTable, commandTableOffset)
+
+	var dataTable atom.AtomMasterDataTable
+	dataTableOffset := header.MasterDataTableOffset
+	unpack(data, dataTableOffset, &dataTable)
+	b.SetO(dataTable, dataTableOffset)
+
+	var powerPlayTable atom.AtomVega10PowerPlayTable
+	powerPlayTableOffset := dataTable.PowerPlayInfo
+	unpack(data, powerPlayTableOffset, &powerPlayTable)
+	b.SetO(powerPlayTable, powerPlayTableOffset)
+
+	var powerTuneTable atom.AtomVega10PowerTuneTable
+	powerTuneTableOffset := powerPlayTableOffset + powerPlayTable.PowerTuneTableOffset
+	unpack(data, powerTuneTableOffset, &powerTuneTable)
+	b.SetO(powerTuneTable, powerTuneTableOffset)
+
+	var mClkTable atom.AtomVega10MClkTable
+	mClkTableOffset := powerPlayTableOffset + powerPlayTable.MclkDependencyTableOffset
+	unpack(data, mClkTableOffset, &mClkTable)
+	b.SetO(mClkTable, mClkTableOffset)
+
+	var gfxClkTable atom.AtomVega10GFXClkTableV2
+	gfxClkTableOffset := powerPlayTableOffset + powerPlayTable.GfxclkDependencyTableOffset
+	unpack(data, gfxClkTableOffset, &gfxClkTable)
+	b.SetO(gfxClkTable, gfxClkTableOffset)
+
+	var vramInfo atom.AtomVRAMInfoV23
+	vramInfoOffset := dataTable.VRAMInfo
+	unpack(data, vramInfoOffset, &vramInfo)
+	vramEntries := make([]atom.AtomVRAMModuleV9, vramInfo.NumOfVRAMModule)
+	size, _ := restruct.SizeOf(vramInfo)
+	vramEntryOffset := vramInfoOffset + uint16(size)
+	for i := range vramEntries {
+		unpack(data, vramEntryOffset, &vramEntries[i])
+		vramEntryOffset += vramEntries[i].ModuleSize
+	}
+	vramInfo.VramInfo = vramEntries
+	b.SetO(vramInfo, vramInfoOffset)
+
+	var voltageInfo atom.AtomVoltageInfo
+	voltageInfoOffset := dataTable.VoltageObjectInfo
+	unpack(data, voltageInfoOffset, &voltageInfo)
+	voltageEntries := make([]byte, uint16(voltageInfo.NumOfVoltageEntries)*uint16(voltageInfo.BytesPerVoltageEntry))
+	size, _ = restruct.SizeOf(voltageInfo)
+	voltageEntryOffset := voltageInfoOffset + uint16(size)
+	for i := range voltageEntries {
+		unpack(data, voltageEntryOffset, &voltageEntries[i])
+		voltageEntryOffset++
+	}
+	voltageInfo.VoltageEntries = voltageEntries
+	b.SetO(voltageInfo, voltageInfoOffset)
+
+	var hbmVoltageTable atom.AtomVega10VoltageTable
+	hbmVoltageTableOffset := powerPlayTableOffset + powerPlayTable.VddmemLookupTableOffset
+	unpack(data, hbmVoltageTableOffset, &hbmVoltageTable)
+	b.SetO(hbmVoltageTable, hbmVoltageTableOffset)
+
+	var hardLimitTable atom.AtomVega10HardLimitTable
+	hardLimitTableOffset := powerPlayTableOffset + powerPlayTable.HardLimitTableOffset
+	unpack(data, hardLimitTableOffset, &hardLimitTable)
+	b.SetO(hardLimitTable, hardLimitTableOffset)
+
+	asicInfoItem := bios.Item{Offset: dataTable.ASICProfilingInfo, Table: atom.AtomAsicProfilingInfoV35{}}
+	unpack(data, asicInfoItem.Offset, &asicInfoItem.Table)
+	b.SetItem2(asicInfoItem)
+
+	/* */
+
+	b.Sort(func(a *orderedmap.Pair, b *orderedmap.Pair) bool {
+		return a.Value().(bios.Item).Offset < b.Value().(bios.Item).Offset
+	})
+	for _, k := range b.Keys() {
+		v, _ := b.Get(k)
+		item := v.(bios.Item)
+		fmt.Printf("%s0x%X: %s: %s%+v%s\n", chalk.Red, item.Offset, k, chalk.Cyan, item.Table, chalk.Reset)
+	}
 }
 
-func test(object interface{}, offset uint16) {
-	fmt.Printf("%s%T @ 0x%X: %s%+v%s\n", chalk.Red, object, offset, chalk.Cyan, object, chalk.Reset)
+func unpackItem(bytes []byte, item *bios.Item) {
+	unpack(bytes, item.Offset, &item.Table)
+}
+
+func unpack(bytes []byte, offset uint16, object interface{}) {
+	err := restruct.Unpack(bytes[offset:], binary.LittleEndian, object)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
