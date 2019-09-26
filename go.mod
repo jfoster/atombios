@@ -7,7 +7,6 @@ require (
 	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0
 	github.com/pkg/errors v0.8.1 // indirect
-	github.com/srfrog/dict v0.0.2
 	github.com/therecipe/qt v0.0.0-20190507230325-cf6956137ad2
 	github.com/ttacon/chalk v0.0.0-20160626202418-22c06c80ed31
 )

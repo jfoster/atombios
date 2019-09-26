@@ -1,7 +1,9 @@
-package atom
+package vega10
 
-type AtomVega10PowerPlayTable struct {
-	Header                       AtomCommonTableHeader
+import "github.com/jfoster/atombiostool/atom"
+
+type AtomPowerPlayTable struct {
+	Header                       atom.AtomCommonTableHeader
 	TableRevision                byte
 	TableSize                    uint16
 	GoldenPPID                   uint32
@@ -44,7 +46,7 @@ type AtomVega10PowerPlayTable struct {
 	PhyClkDependencyTableOffset  uint16
 }
 
-type AtomVega10FanTable struct {
+type AtomFanTable struct {
 	RevId                byte   /* Change this if the table format changes or version changes so that the other fields are not the same. */
 	FanOutputSensitivity uint16 /* Sensitivity of fan reaction to temepature changes. */
 	FanRPMMax            uint16 /* The default value in RPM. */
@@ -65,7 +67,7 @@ type AtomVega10FanTable struct {
 	FanStartTemperature  uint16
 }
 
-type AtomVega10FanTableV2 struct {
+type AtomFanTableV2 struct {
 	RevId                byte
 	FanOutputSensitivity uint16
 	FanAcousticLimitRpm  uint16
@@ -88,7 +90,7 @@ type AtomVega10FanTableV2 struct {
 	FanMaxRPM            byte
 }
 
-type AtomVega10FanTableV3 struct {
+type AtomFanTableV3 struct {
 	RevId                byte
 	FanOutputSensitivity uint16
 	FanAcousticLimitRpm  uint16
@@ -112,39 +114,39 @@ type AtomVega10FanTableV3 struct {
 	MGpuThrottlingRPM    uint16
 }
 
-type AtomVega10MClkTable struct {
+type AtomMClkTable struct {
 	RevID      byte
 	NumEntries byte `struct:"sizeof=Entries"`
-	Entries    []AtomVega10MClkEntry
+	Entries    []AtomMClkEntry
 }
 
-type AtomVega10MClkEntry struct {
+type AtomMClkEntry struct {
 	MemClk    uint32 /* Clock Frequency */
 	VddInd    byte   /* SOC_VDD index */
 	VddMemInd byte   /* MEM_VDD - only non zero for MCLK record */
 	VddciInd  byte   /* VDDCI   = only non zero for MCLK record */
 }
 
-type AtomVega10GFXClkTable struct {
+type AtomGFXClkTable struct {
 	RevID      byte
 	NumEntries byte `struct:"sizeof=Entries"`
-	Entries    []AtomVega10GFXClkEntry
+	Entries    []AtomGFXClkEntry
 }
 
-type AtomVega10GFXClkEntry struct {
+type AtomGFXClkEntry struct {
 	Clk                  uint32 /* Clock Frequency */
 	VddInd               byte   /* SOC_VDD index */
 	CKSVOffsetandDisable uint16 /* Bits 0~30: Voltage offset for CKS, Bit 31: Disable/enable for the GFXCLK level. */
 	AVFSOffset           uint16 /* AVFS Voltage offset */
 }
 
-type AtomVega10GFXClkTableV2 struct {
+type AtomGFXClkTableV2 struct {
 	RevID      byte
 	NumEntries byte `struct:"sizeof=Entries"`
-	Entries    []AtomVega10GFXClkEntryV2
+	Entries    []AtomGFXClkEntryV2
 }
 
-type AtomVega10GFXClkEntryV2 struct {
+type AtomGFXClkEntryV2 struct {
 	Clk                  uint32 /* Clock Frequency */
 	VddInd               byte   /* SOC_VDD index */
 	CKSVOffsetandDisable uint16 /* Bits 0~30: Voltage offset for CKS, Bit 31: Disable/enable for the GFXCLK level. */
@@ -153,17 +155,17 @@ type AtomVega10GFXClkEntryV2 struct {
 	_                    [3]byte
 }
 
-type AtomVega10VoltageEntry struct {
+type AtomVoltageEntry struct {
 	Vdd uint16 /* Base voltage */
 }
 
-type AtomVega10VoltageTable struct {
+type AtomVoltageTable struct {
 	RevId      byte
 	NumEntries byte `struct:"sizeof=Entries"`
-	Entries    []AtomVega10VoltageEntry
+	Entries    []AtomVoltageEntry
 }
 
-type AtomVega10HardLimitEntry struct {
+type AtomHardLimitEntry struct {
 	SOCCLKLimit uint32
 	GFXCLKLimit uint32
 	MCLKLimit   uint32
@@ -172,8 +174,8 @@ type AtomVega10HardLimitEntry struct {
 	VddMemLimit uint16
 }
 
-type AtomVega10HardLimitTable struct {
+type AtomHardLimitTable struct {
 	RevId      byte
 	NumEntries byte `struct:"sizeof=Entries"`
-	Entries    []AtomVega10HardLimitEntry
+	Entries    []AtomHardLimitEntry
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/iancoleman/orderedmap"
 	"github.com/jfoster/atombiostool/atom"
+	"github.com/jfoster/atombiostool/atom/vega10"
 	"github.com/jfoster/atombiostool/bios"
 
 	"github.com/go-restruct/restruct"
@@ -69,22 +70,22 @@ func main() {
 	unpack(data, dataTableOffset, &dataTable)
 	b.SetO(dataTable, dataTableOffset)
 
-	var powerPlayTable atom.AtomVega10PowerPlayTable
+	var powerPlayTable vega10.AtomPowerPlayTable
 	powerPlayTableOffset := dataTable.PowerPlayInfo
 	unpack(data, powerPlayTableOffset, &powerPlayTable)
 	b.SetO(powerPlayTable, powerPlayTableOffset)
 
-	var powerTuneTable atom.AtomVega10PowerTuneTable
+	var powerTuneTable vega10.AtomPowerTuneTable
 	powerTuneTableOffset := powerPlayTableOffset + powerPlayTable.PowerTuneTableOffset
 	unpack(data, powerTuneTableOffset, &powerTuneTable)
 	b.SetO(powerTuneTable, powerTuneTableOffset)
 
-	var mClkTable atom.AtomVega10MClkTable
+	var mClkTable vega10.AtomMClkTable
 	mClkTableOffset := powerPlayTableOffset + powerPlayTable.MclkDependencyTableOffset
 	unpack(data, mClkTableOffset, &mClkTable)
 	b.SetO(mClkTable, mClkTableOffset)
 
-	var gfxClkTable atom.AtomVega10GFXClkTableV2
+	var gfxClkTable vega10.AtomGFXClkTableV2
 	gfxClkTableOffset := powerPlayTableOffset + powerPlayTable.GfxclkDependencyTableOffset
 	unpack(data, gfxClkTableOffset, &gfxClkTable)
 	b.SetO(gfxClkTable, gfxClkTableOffset)
@@ -115,12 +116,12 @@ func main() {
 	voltageInfo.VoltageEntries = voltageEntries
 	b.SetO(voltageInfo, voltageInfoOffset)
 
-	var hbmVoltageTable atom.AtomVega10VoltageTable
+	var hbmVoltageTable vega10.AtomVoltageTable
 	hbmVoltageTableOffset := powerPlayTableOffset + powerPlayTable.VddmemLookupTableOffset
 	unpack(data, hbmVoltageTableOffset, &hbmVoltageTable)
 	b.SetO(hbmVoltageTable, hbmVoltageTableOffset)
 
-	var hardLimitTable atom.AtomVega10HardLimitTable
+	var hardLimitTable vega10.AtomHardLimitTable
 	hardLimitTableOffset := powerPlayTableOffset + powerPlayTable.HardLimitTableOffset
 	unpack(data, hardLimitTableOffset, &hardLimitTable)
 	b.SetO(hardLimitTable, hardLimitTableOffset)

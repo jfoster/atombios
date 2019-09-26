@@ -1,6 +1,6 @@
-package atom
+package vega10
 
-type AtomVega10PowerTuneTable struct {
+type AtomPowerTuneTable struct {
 	RevId                   byte
 	SocketPowerLimit        uint16
 	BatteryPowerLimit       uint16
@@ -29,7 +29,7 @@ type AtomVega10PowerTuneTable struct {
 	TemperatureLimitTedge   uint16
 }
 
-type AtomVega10PowerTuneTableV2 struct {
+type AtomPowerTuneTableV2 struct {
 	RevId                   byte
 	SocketPowerLimit        uint16
 	BatteryPowerLimit       uint16
@@ -55,7 +55,7 @@ type AtomVega10PowerTuneTableV2 struct {
 	TemperatureLimitTedge   uint16
 }
 
-type AtomVega10PowerTuneTableV3 struct {
+type AtomPowerTuneTableV3 struct {
 	RevId                   byte
 	SocketPowerLimit        uint16
 	BatteryPowerLimit       uint16
