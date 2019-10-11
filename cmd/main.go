@@ -7,9 +7,9 @@ import (
 	"os"
 
 	"github.com/iancoleman/orderedmap"
-	"github.com/jfoster/atombiostool/atom"
-	"github.com/jfoster/atombiostool/atom/vega10"
-	"github.com/jfoster/atombiostool/bios"
+	"github.com/jfoster/atombios/atom"
+	"github.com/jfoster/atombios/atom/vega10"
+	"github.com/jfoster/atombios/bios"
 
 	"github.com/go-restruct/restruct"
 	"github.com/ttacon/chalk"
@@ -128,9 +128,7 @@ func main() {
 
 	asicInfoItem := bios.Item{Offset: dataTable.ASICProfilingInfo, Table: atom.AtomAsicProfilingInfoV35{}}
 	unpack(data, asicInfoItem.Offset, &asicInfoItem.Table)
-	b.SetItem2(asicInfoItem)
-
-	/* */
+	b.SetItem(asicInfoItem)
 
 	b.Sort(func(a *orderedmap.Pair, b *orderedmap.Pair) bool {
 		return a.Value().(bios.Item).Offset < b.Value().(bios.Item).Offset

@@ -1,6 +1,6 @@
 package tonga
 
-import "github.com/jfoster/atombiostool/atom"
+import "github.com/jfoster/atombios/atom"
 
 type AtomTongaPowerPlayTable struct {
 	Header                    atom.AtomCommonTableHeader

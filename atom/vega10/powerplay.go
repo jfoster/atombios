@@ -1,6 +1,6 @@
 package vega10
 
-import "github.com/jfoster/atombiostool/atom"
+import "github.com/jfoster/atombios/atom"
 
 type AtomPowerPlayTable struct {
 	Header                       atom.AtomCommonTableHeader

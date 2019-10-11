@@ -8,7 +8,7 @@ import (
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/widgets"
 
-	"github.com/jfoster/atombiostool/atom"
+	"github.com/jfoster/atombios/atom"
 )
 
 const (

@@ -1,4 +1,4 @@
-module github.com/jfoster/atombiostool
+module github.com/jfoster/atombios
 
 go 1.12
 
