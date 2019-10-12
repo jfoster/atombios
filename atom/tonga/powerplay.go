@@ -2,7 +2,7 @@ package tonga
 
 import "github.com/jfoster/atombios/atom"
 
-type AtomTongaPowerPlayTable struct {
+type AtomPowerPlayTable struct {
 	Header                    atom.AtomCommonTableHeader
 	TableRevision             byte
 	TableSize                 uint16 /*the size of header structure */
@@ -33,7 +33,7 @@ type AtomTongaPowerPlayTable struct {
 	_                         [6]uint16 /*TODO: modify reserved size to fit structure aligning */
 }
 
-type AtomTongaFanTable struct {
+type AtomFanTable struct {
 	RevID                   byte
 	THyst                   byte
 	TMin                    uint16

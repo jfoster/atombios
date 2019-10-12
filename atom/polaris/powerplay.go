@@ -1,12 +1,12 @@
 package polaris
 
-type AtomPolarisMClkTable struct {
+type AtomMClkTable struct {
 	RevID      byte
 	NumEntries byte `struct:"sizeof=Entries"`
-	Entries    []AtomPolarisMClkEntry
+	Entries    []AtomMClkEntry
 }
 
-type AtomPolarisMClkEntry struct {
+type AtomMClkEntry struct {
 	VddcInd      byte
 	Vddci        uint16
 	VddgfxOffset uint16

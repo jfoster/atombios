@@ -1,4 +1,4 @@
-package atom
+package polaris
 
 type AtomPowerTuneTable struct {
 	RevID                     byte

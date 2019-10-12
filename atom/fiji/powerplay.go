@@ -1,6 +1,6 @@
-package atom
+package fiji
 
-type AtomFijiFanTable struct {
+type AtomFanTable struct {
 	RevID                   byte
 	THyst                   byte
 	TMin                    uint16
