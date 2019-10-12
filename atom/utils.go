@@ -1,19 +1,22 @@
 package atom
 
-func FixChecksum(bytes []byte) {
-	bytes[AtomRomChecksumOffset] = CalcChecksum(bytes)
+func FixChecksum(bytes *[]byte) {
+	b := *bytes
+	b[AtomRomChecksumOffset] = CalcChecksum(b)
+	bytes = &b
 }
 
-func CalcChecksum(bytes []byte) byte {
-	size := int(bytes[AtomRomHeaderSizeOffset]) * 512
-	checksum := bytes[AtomRomChecksumOffset] - calcOffset(bytes[:size])
-	return checksum
-}
-
-func calcOffset(bytes []byte) byte {
-	var o byte
-	for i := 0; i < len(bytes); i++ {
-		o += bytes[i]
+func CalcChecksum(bytes []byte) (b byte) {
+	if len(bytes) > 0 {
+		size := int(bytes[AtomRomHeaderSizeOffset]) * 512
+		b = bytes[AtomRomChecksumOffset] - calcOffset(bytes[:size])
 	}
-	return o
+	return b
+}
+
+func calcOffset(bytes []byte) (b byte) {
+	for _, v := range bytes {
+		b += v
+	}
+	return b
 }
